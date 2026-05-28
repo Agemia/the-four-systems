@@ -1,0 +1,41 @@
+# Local credentials, never commit
+.mcp.json
+.claude/settings.local.json
+
+# Private business context (9 files per business, filled per user)
+context/*
+!context/README.md
+!context/.gitkeep
+!context-templates/
+
+# Per-run state and outputs
+state/.lock
+state/agent-log.json
+state/onsite-audit.json
+state/refresh-candidates.json
+state/refresh-queue.json
+state/serp-snapshots/*
+!state/serp-snapshots/.gitkeep
+output/
+reports/
+logs/
+/tmp/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Misc
+*.log
