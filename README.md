@@ -104,7 +104,9 @@ Tu auras besoin de **3 comptes** (tous ont une option gratuite ou très peu chè
 
 ### 3.3 Tes propres informations business
 
-Tu vas devoir remplir **9 fichiers de contexte** qui décrivent ton business à l'IA. Pas de panique : **un agent dédié (`context-bootstrapper`) te pose les questions** pendant 15-20 minutes et remplit tout tout seul. Tu peux aussi le faire à la main si tu préfères.
+Tu vas devoir remplir **9 fichiers de contexte** qui décrivent ton business à l'IA. Pas de panique : **l'onboarding guidé (`setup`) te pose toutes les questions** — y compris tes clés API — et remplit tout tout seul. Tu peux aussi le faire à la main si tu préfères.
+
+Bonus : pendant l'onboarding, tu peux fournir des **exemples de bons et de mauvais articles** (URLs, PDFs, fichiers texte). L'IA les analyse et génère une charte éditoriale (`context/editorial-charter.md`) que le rédacteur respecte ensuite à chaque article.
 
 Les 9 fichiers couvrent :
 - Qui tu es, ton site, ta locale (FR/EN/DE…), tes sujets en/hors-scope
@@ -120,7 +122,7 @@ Les 9 fichiers couvrent :
 
 ---
 
-## 4. Installation pas-à-pas (15 minutes)
+## 4. Installation : l'onboarding guidé fait (presque) tout
 
 ### Étape 1 — Cloner le repo
 
@@ -137,70 +139,40 @@ claude /login
 
 Suis le flux d'authentification (ouvre ton compte Anthropic et autorise).
 
-### Étape 3 — Configurer les credentials DataForSEO et GSC
-
-Copie les templates :
-
-```bash
-cp .mcp.json.example .mcp.json
-cp .claude/settings.local.json.example .claude/settings.local.json
-```
-
-Édite `.mcp.json` et remplace `you@example.com` / `your-dataforseo-password` par tes vraies creds DataForSEO :
-
-```json
-{
-  "mcpServers": {
-    "dfs-mcp": {
-      "command": "npx",
-      "args": ["-y", "dataforseo-mcp-server"],
-      "env": {
-        "DATAFORSEO_USERNAME": "ton-email@example.com",
-        "DATAFORSEO_PASSWORD": "ton-password-dataforseo"
-      }
-    },
-    "gsc": {
-      "command": "uv",
-      "args": ["run", "--directory", "/chemin/vers/mcp-gsc", "python", "gsc_server.py"]
-    }
-  }
-}
-```
-
-> ⚠️ Le fichier `.mcp.json` est dans `.gitignore`, donc tes creds **ne seront jamais commités sur GitHub**. Mais ne les colle nulle part en dehors de ce fichier.
-
-### Étape 4 — Installer le MCP Google Search Console
-
-Le MCP GSC est un petit serveur Python externe. Suis les instructions de [`docs/00-prerequisites.md`](docs/00-prerequisites.md) section "MCP 2: Google Search Console" pour :
-1. Cloner le repo `mcp-gsc`
-2. Créer un projet Google Cloud + télécharger `client_secret.json`
-3. Mettre à jour le chemin `--directory` dans `.mcp.json`
-
-À la première utilisation, le système ouvrira ton navigateur pour t'authentifier sur GSC une fois.
-
-### Étape 5 — Lancer Claude Code dans le dossier
+### Étape 3 — Lancer Claude Code et te laisser guider ✨
 
 ```bash
 claude
 ```
 
-À ce moment-là, Claude Code lit ton `.mcp.json` et charge les deux MCPs (DataForSEO et GSC). S'il y a une erreur de config, il te le dira ici.
+C'est tout. **Au démarrage, Claude détecte automatiquement que le projet n'est pas encore configuré et te propose l'onboarding.** Dis oui (ou tape `setup` à tout moment) et il t'accompagne pour :
 
-### Étape 6 — Remplir ton contexte business
+1. **Tes clés API** : il te demande tes identifiants DataForSEO et les écrit dans `.mcp.json` (gitignored, jamais commité, jamais ré-affiché). GSC est optionnel à ce stade, tu peux le faire plus tard.
+2. **L'identité de ton site** : qui tu es, tes objectifs, et surtout **tes pages business prioritaires** (les money pages qui génèrent ton chiffre).
+3. **Ta charte éditoriale** : comment ton site écrit, et ta définition d'un bon et d'un mauvais article. Tu peux lui donner des **exemples concrets** : des URLs d'articles que tu admires, des PDFs, des fichiers texte. Il les analyse (structure, voix, style de preuve, formatage) et génère `context/editorial-charter.md` que le rédacteur respectera à chaque article.
+4. **Le reste du contexte** : audience, expériences vécues, mots bannis, concurrents, auteur.
+5. **Tes seed keywords** + une vérification finale de bout en bout.
 
-Dans la session Claude Code qui vient de s'ouvrir, tape :
+Compte 30-45 minutes la première fois. **Tu peux t'arrêter et reprendre quand tu veux** : tout est sauvegardé au fur et à mesure, et à chaque redémarrage Claude détecte où tu en es et reprend là.
 
+> Note : après avoir saisi tes clés API, Claude te demandera de redémarrer (`/exit` puis `claude`) — c'est normal, les connexions API se chargent au démarrage de session. L'onboarding reprend tout seul ensuite.
+
+### (Optionnel) Étape 4 — Vérifier où tu en es à tout moment
+
+```bash
+python3 scripts/check-setup.py
 ```
-bootstrap my context folder
-```
 
-L'agent `context-bootstrapper` va :
-1. Te demander ton URL
-2. Aller fetcher ton site pour pré-remplir ce qu'il peut
-3. Te poser 6 sections de questions pendant 15-20 minutes (audience, voix, expérience, services, brand, concurrents, auteur)
-4. Écrire les 9 fichiers dans `context/` tout seul
+Ce "docteur" t'affiche la checklist complète : ce qui est fait ✓, ce qui manque, et la prochaine étape. C'est lui que Claude consulte au démarrage de chaque session.
 
-Tu peux relire/ajuster chaque fichier après. Tu peux aussi t'arrêter en cours de route ; les réponses sont sauvegardées au fur et à mesure.
+### (Optionnel) Étape 5 — Installer le MCP Google Search Console
+
+Nécessaire uniquement pour le System 4 (refresh recommender). Suis [`docs/00-prerequisites.md`](docs/00-prerequisites.md) section "MCP 2: Google Search Console" pour :
+1. Cloner le repo `mcp-gsc`
+2. Créer un projet Google Cloud + télécharger `client_secret.json`
+3. Mettre à jour le chemin `--directory` dans `.mcp.json`
+
+À la première utilisation, le système ouvrira ton navigateur pour t'authentifier sur GSC une fois.
 
 ---
 

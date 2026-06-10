@@ -6,16 +6,18 @@ Ce dossier doit contenir **9 fichiers** qui décrivent ton site web et ton busin
 
 ## Deux façons de le remplir
 
-### Option 1 — Interview avec l'IA (recommandé pour la première fois)
+### Option 1 — Onboarding guidé avec l'IA (recommandé pour la première fois)
 
 1. Ouvre ce projet dans Claude Code : `cd the-four-systems && claude`
-2. Tape :
+2. Claude détecte tout seul que le setup est incomplet et te propose l'onboarding. Sinon, tape :
 
    ```
-   bootstrap my context folder
+   setup
    ```
 
-3. Claude te pose des questions pendant 15-20 minutes (audience, services, prix, voix, opinions, auteur, concurrents, etc.) et écrit les 9 fichiers ici tout seul. Tu peux relire et ajuster après.
+3. L'onboarding couvre TOUT : tes clés API, l'identité du site, tes money pages, ta charte éditoriale (tu peux donner des exemples de bons et mauvais articles, en URL ou en PDF, qu'il analyse), le reste du contexte, et tes seed keywords. 30-45 minutes la première fois, interruptible et reprennable à tout moment.
+
+Si tu veux seulement régénérer les fichiers de contexte (sans la partie clés API), tape `bootstrap my context folder` pour lancer l'interview seule.
 
 ### Option 2 — Édition manuelle
 
@@ -48,6 +50,12 @@ Ce dossier doit contenir **9 fichiers** qui décrivent ton site web et ton busin
 | `competitors.md` | Concurrents directs/indirects, content gaps | Le rédacteur sait quoi NE PAS dupliquer |
 | `author.md` | Auteur officiel, credentials, profils sociaux | Le schema E-E-A-T injecté dans chaque article |
 | `audit-urls.txt` | Les 3-10 URLs prioritaires à auditer techniquement | Le System 3 (onsite audit) |
+
+## Le 10ème fichier (optionnel mais puissant) : `editorial-charter.md`
+
+Pendant l'onboarding (`setup`), tu peux fournir des **exemples de bons et de mauvais articles** : des URLs, des PDFs, des fichiers markdown ou texte. L'IA les analyse (structure, voix, style de preuve, formatage) et génère `context/editorial-charter.md` : les patterns à reproduire, les anti-patterns interdits, et des règles de relecture supplémentaires.
+
+Le rédacteur (System 2) lit ce fichier à chaque run quand il existe : les anti-patterns deviennent des échecs de relecture automatiques. C'est le moyen le plus direct d'imposer TA définition d'un bon article sans toucher aux prompts du système.
 
 ## Pourquoi ces fichiers sont gitignored
 

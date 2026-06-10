@@ -9,6 +9,8 @@ the-four-systems/
 │
 ├── README.md                              Vue d'ensemble + quickstart
 ├── STRUCTURE.md                           ← cette page
+├── CLAUDE.md                              ⭐ Auto-chargé par Claude Code à chaque session :
+│                                          déclenche l'onboarding si le setup est incomplet
 ├── LICENSE                                MIT
 ├── .gitignore                             Cache .mcp.json, state runtime, output, reports
 │
@@ -21,7 +23,9 @@ the-four-systems/
 ├── .claude/
 │   ├── settings.local.json.example        Template de l'allowlist permissions
 │   ├── settings.local.json                Allowlist actif (GITIGNORED)
-│   └── skills/                            Les 5 skills user-invocables dans Claude Code
+│   └── skills/                            Les 6 skills user-invocables dans Claude Code
+│       ├── setup.md                         ⭐ Onboarding guidé : clés API + identité +
+│       │                                      charte éditoriale (analyse d'exemples) + seeds
 │       ├── context-bootstrapper.md          Lance l'interview qui remplit context/
 │       ├── keyword-researcher.md            Skill System 1
 │       ├── content-writer.md                Skill System 2
@@ -45,6 +49,8 @@ the-four-systems/
 │   ├── competitors.md                      Carte concurrentielle + content gaps
 │   ├── author.md                            E-E-A-T : auteur, credentials, sameAs schema
 │   ├── audit-urls.txt                       URLs à auditer par System 3
+│   ├── editorial-charter.md                 (optionnel) Généré par `setup` depuis tes exemples
+│   │                                        de bons/mauvais articles ; lu par le rédacteur
 │   └── publishing.json                      (optionnel) Config auto-publish Astro
 │
 ├── context-templates/                     Templates .example pour bootstrap initial
@@ -59,6 +65,9 @@ the-four-systems/
 │   └── audit-urls.txt.example
 │
 ├── scripts/                               Exécutables Python + shell
+│   ├── check-setup.py                     ⭐ Le "docteur" : détecte ce qui manque au setup
+│   │                                        (creds, contexte, seeds) ; lu par CLAUDE.md à
+│   │                                        chaque session pour déclencher l'onboarding
 │   ├── lint-post.py                       Vérif qualité des posts (Three Kings, capsules, headings)
 │   ├── mark-queue-item.py                 Update status d'un item content-queue
 │   ├── pick-next-queue-item.py            Picker BVS-aware pour System 2
