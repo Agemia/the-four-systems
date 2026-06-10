@@ -127,7 +127,7 @@ Les 9 fichiers couvrent :
 ### Étape 1 — Cloner le repo
 
 ```bash
-git clone https://github.com/<TON-USERNAME>/<TON-REPO> the-four-systems
+git clone https://github.com/Agemia/the-four-systems
 cd the-four-systems
 ```
 
