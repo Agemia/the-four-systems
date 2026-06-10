@@ -10,8 +10,19 @@ At the start of every session, before doing anything else, run:
 python3 scripts/check-setup.py --quiet
 ```
 
-- **Exit 1 (setup incomplete):** the project is not configured yet. Greet the user, tell them the setup is incomplete, and offer to run the guided onboarding right away: "Your project is not fully configured yet. Want me to walk you through the setup? It takes 30 to 45 minutes the first time and you can stop and resume anytime. Just say yes or type 'setup'." If they accept, invoke the `setup` skill. If they ask for something else first, help them, but remind them that Systems 1 to 4 will not run correctly until setup is complete.
 - **Exit 0 (setup complete):** say nothing about setup. Proceed with whatever the user asked.
+- **Exit 1 (setup incomplete):** apply the protocol below. Do NOT ask "do you want to run the onboarding?". On an unconfigured project, onboarding IS the default behavior.
+
+### Incomplete-setup protocol (zero fluff)
+
+1. **If the user's message already contains setup material** (API keys, a site URL, money page URLs, file paths, pasted article examples), ingest it immediately: credentials go into `.mcp.json`, business answers into the right `context/` files. Never re-ask for anything they already gave. Then continue from the next missing item.
+2. **Otherwise, start the onboarding directly** by invoking the `setup` skill. Your entire opening is at most 3 lines:
+   - One line of status: "Setup incomplet: il reste N items." (mirror the user's language)
+   - One line offering the fast path: "Tu peux tout me donner d'un coup (identifiants DataForSEO, URL du site, pages business, exemples d'articles) ou répondre question par question."
+   - Then ask the FIRST missing item's question immediately (usually the DataForSEO credentials).
+   No welcome speech, no recap of what the project is (the user just cloned it, they know), no enumeration of all missing items, no time estimate beyond a parenthetical if asked.
+3. **If the user explicitly asks for something else**, do that instead, with a single one-line reminder that Systems 1 to 4 will not run until setup completes. Do not repeat the reminder in the same session.
+4. The user can decline onboarding by saying so; respect that for the rest of the session.
 
 The doctor is cheap and silent with `--quiet`; never skip this check.
 

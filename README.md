@@ -145,7 +145,12 @@ Suis le flux d'authentification (ouvre ton compte Anthropic et autorise).
 claude
 ```
 
-C'est tout. **Au démarrage, Claude détecte automatiquement que le projet n'est pas encore configuré et te propose l'onboarding.** Dis oui (ou tape `setup` à tout moment) et il t'accompagne pour :
+C'est tout. **Au démarrage, Claude détecte automatiquement que le projet n'est pas encore configuré et démarre l'onboarding directement** : pas de blabla, il te pose tout de suite la première question. Deux façons de répondre :
+
+- **Fast path** : balance tout d'un coup (identifiants DataForSEO, URL du site, pages business, exemples d'articles, PDFs) et il dispatch chaque élément au bon endroit.
+- **Question par question** : il te guide pas à pas.
+
+Dans les deux cas, il couvre :
 
 1. **Tes clés API** : il te demande tes identifiants DataForSEO et les écrit dans `.mcp.json` (gitignored, jamais commité, jamais ré-affiché). GSC est optionnel à ce stade, tu peux le faire plus tard.
 2. **L'identité de ton site** : qui tu es, tes objectifs, et surtout **tes pages business prioritaires** (les money pages qui génèrent ton chiffre).

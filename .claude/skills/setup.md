@@ -1,6 +1,6 @@
 ---
 name: setup
-description: Guided first-run onboarding for The Four Systems. Checks what is missing (credentials, business context, seeds), then walks the user through it: DataForSEO + GSC keys into .mcp.json, site identity and money pages, editorial charter with good/bad article examples (URLs or PDFs analyzed automatically), remaining context files, seed keywords, final verification. Resumable at any point; state is whatever already exists on disk. Trigger when the user says "setup", "set up", "onboarding", "get started", "configure", "installation", "premiers pas", "configurer le projet", "demarrer", or when check-setup.py reports an incomplete setup at session start.
+description: Guided first-run onboarding for The Four Systems. Checks what is missing (credentials, business context, seeds), then walks the user through it with zero fluff: DataForSEO + GSC keys into .mcp.json, site identity and money pages, editorial charter with good/bad article examples (URLs or PDFs analyzed automatically), remaining context files, seed keywords, final verification. Supports bulk intake: the user can dump keys, URLs, and files in any order and each piece is dispatched immediately. Resumable at any point; state is whatever already exists on disk. Trigger when the user says "setup", "set up", "onboarding", "get started", "configure", "installation", "premiers pas", "configurer le projet", "demarrer", when the user pastes API credentials or setup material, or when check-setup.py reports an incomplete setup at session start.
 allowed-tools: Read, Write, Edit, Bash, WebFetch
 ---
 
@@ -10,6 +10,8 @@ Walk a brand-new user from fresh clone to a fully configured project. Every phas
 
 **Conduct this entire conversation in the user's language.** The repo ships in French and English. Mirror whatever the user speaks from the first message onward.
 
+**Tone: zero fluff.** No welcome speech, no recap of what the project is, no enumeration of every missing item. The user just cloned the repo; they want to be operational, not lectured. Status updates are one line. Each turn ends with exactly one concrete question or one concrete instruction.
+
 ## Phase 0: Diagnose (always run first)
 
 Run the doctor:
@@ -18,12 +20,24 @@ Run the doctor:
 python3 scripts/check-setup.py --json
 ```
 
-Parse the JSON output. Build a short human-readable summary: list what is complete with a checkmark, list what is missing with a bullet. Then give an honest time estimate:
+Parse the JSON. Your entire opening is at most 3 lines:
 
-- Full onboarding from zero: 30 to 45 minutes.
-- Partial resume (some phases already done): shorter, tell them which phases remain.
+1. One-line status: "Setup incomplet: N items restants." (or the equivalent in the user's language)
+2. One-line fast path offer: "Tu peux tout me donner d'un coup (identifiants DataForSEO, URL du site, pages business, exemples d'articles, PDFs) ou repondre question par question."
+3. The first missing item's question, immediately.
 
-Then jump immediately to the first incomplete phase. Never redo a phase whose files already exist. For each existing file, offer three options: **keep** (move on), **review** (read it together and confirm), **redo** (overwrite with fresh answers). Default to keep if the user does not object.
+Then jump to the first incomplete phase. Never redo a phase whose files already exist. For each existing file, default to **keep** silently; only mention the keep/review/redo choice if the user asks about an existing file.
+
+## Phase 0bis: Bulk intake (applies at ANY point)
+
+The user may dump several things at once, in any order, in any message: API keys, a site URL, a list of money pages, pasted text, file paths, article URLs. When that happens:
+
+1. Dispatch each piece to its destination immediately: credentials into `.mcp.json`, site identity into `context/site-config.md`, money pages into `context/services.md` and `context/audit-urls.txt`, article examples into the Phase 3 analysis, seeds into `state/seed-keywords.txt`.
+2. Write the files as you go. Do not wait for the "right" phase.
+3. Never re-ask for anything already provided.
+4. After ingesting, state in one line what was filled, then ask the next missing item's question.
+
+If the user's very first message already contains setup material, Phase 0bis runs before any question is asked.
 
 ---
 
@@ -236,6 +250,8 @@ Remind the user: "The more you fill in `context/experience-notes.md` with real c
 
 ## Hard rules
 
+- **Zero fluff.** One-line status updates. One question or one instruction per turn. No recaps the user did not ask for.
+- **Bulk intake always wins.** Material the user volunteers is ingested and written immediately, whatever the current phase. Never re-ask for something already given.
 - **Never echo a password after capture.** Write credentials to `.mcp.json` only. Do not repeat them, summarize them, or reference them in any other file.
 - **No em dashes** in any generated file. Use colons, commas, parentheses, or split sentences. This rule is absolute.
 - **No emojis** in generated files unless the user's tone-of-voice explicitly calls for them.

@@ -9,7 +9,7 @@ Ce dossier doit contenir **9 fichiers** qui décrivent ton site web et ton busin
 ### Option 1 — Onboarding guidé avec l'IA (recommandé pour la première fois)
 
 1. Ouvre ce projet dans Claude Code : `cd the-four-systems && claude`
-2. Claude détecte tout seul que le setup est incomplet et te propose l'onboarding. Sinon, tape :
+2. Claude détecte tout seul que le setup est incomplet et démarre l'onboarding directement (tu peux aussi tout lui donner d'un coup : clés, URL, exemples). Sinon, tape :
 
    ```
    setup
