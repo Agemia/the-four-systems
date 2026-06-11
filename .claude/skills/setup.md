@@ -107,6 +107,8 @@ Follow the skeletons in `context-templates/*.example` as layout guides. Write th
 
 **`context/audit-urls.txt`** -- one URL per line: the homepage plus the top 2 to 4 money pages from 2b.
 
+**`state/keyword-bank.json`** -- set the top-level `"site"` field to the bare domain (e.g. `"example.com"`), preserving every other field. The dashboard header displays this domain; until it is set, a brand placeholder shows instead.
+
 Save each file immediately before moving on.
 
 ---

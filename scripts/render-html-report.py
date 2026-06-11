@@ -35,6 +35,7 @@ ONSITE = ROOT / "state" / "onsite-audit.json"
 CANDIDATES = ROOT / "state" / "refresh-candidates.json"
 REFRESH = ROOT / "state" / "refresh-queue.json"
 AGENT_LOG = ROOT / "state" / "agent-log.json"
+SITE_CONFIG = ROOT / "context" / "site-config.md"
 REPORTS_DIR = ROOT / "reports"
 OUT_DIR = ROOT / "output" / "keywords"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -45,6 +46,171 @@ NOW = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
 # these two constants, or set the SEO_BRAND_NAME / SEO_BRAND_WORDMARK env vars.
 BRAND_NAME = os.environ.get("SEO_BRAND_NAME", "easygrowth")
 BRAND_WORDMARK = os.environ.get("SEO_BRAND_WORDMARK", "easygrowth.fr")
+
+# CTA presentation. Controlled without touching agents via SEO_CTA_STYLE:
+#   popup  -> only the fixed bottom-right card
+#   banner -> only the in-flow full-width band
+#   both   -> both (default)
+#   none   -> neither
+CTA_STYLE = os.environ.get("SEO_CTA_STYLE", "both").strip().lower()
+if CTA_STYLE not in ("popup", "banner", "both", "none"):
+    CTA_STYLE = "both"
+
+ZCAL_URL = "https://zcal.co/i/DRmQAADm"
+
+
+# ----------------------------- i18n -----------------------------------------
+# UI chrome strings only (never data). French is the baked default rendered into
+# the HTML; the EN column feeds the client-side I18N object so setLang('en') can
+# swap textContent. Keys must stay identical across fr and en.
+I18N = {
+    "tab_overview":   {"fr": "vue d'ensemble",    "en": "overview"},
+    "tab_keywords":   {"fr": "mots-cles",         "en": "keywords"},
+    "tab_queue":      {"fr": "file de contenu",   "en": "content queue"},
+    "tab_onsite":     {"fr": "audit onsite",      "en": "onsite audit"},
+    "tab_refresh":    {"fr": "file de refresh",   "en": "refresh queue"},
+
+    "last_updated":   {"fr": "DERNIERE MAJ",      "en": "LAST UPDATED"},
+    "brand_sub":      {"fr": "rapport SEO",       "en": "SEO report"},
+
+    # Overview
+    "stat_kw_bank":   {"fr": "Mots-cles en banque",      "en": "Keywords in bank"},
+    "stat_posts":     {"fr": "Articles ecrits / en file","en": "Posts written / queued"},
+    "stat_onsite_verdict": {"fr": "Verdict sante onsite","en": "Onsite health verdict"},
+    "stat_refresh":   {"fr": "Pages a rafraichir",       "en": "Pages flagged for refresh"},
+    "panel_recent":   {"fr": "Activite recente",         "en": "Recent activity"},
+    "ts_last12":      {"fr": "12 derniers runs",         "en": "last 12 runs"},
+    "th_agent":       {"fr": "Agent",            "en": "Agent"},
+    "th_status":      {"fr": "Statut",           "en": "Status"},
+    "th_duration":    {"fr": "Duree",            "en": "Duration"},
+    "th_timestamp":   {"fr": "Horodatage (UTC)", "en": "Timestamp (UTC)"},
+    "empty_no_runs":  {"fr": "Aucun run enregistre pour l'instant.", "en": "No runs logged yet."},
+
+    # Keywords
+    "stat_in_bank":   {"fr": "En banque",        "en": "In bank"},
+    "stat_skip_zero": {"fr": "Skip / zero-click","en": "Skip / zero-click"},
+    "panel_kw_bank":  {"fr": "Banque de mots-cles", "en": "Keyword bank"},
+    "kw_sorted_suffix": {"fr": "entrees &middot; triees par BVS &darr; volume &darr;",
+                         "en": "entries &middot; sorted by BVS &darr; volume &darr;"},
+    "panel_seeds":    {"fr": "Seeds recherches", "en": "Seeds researched"},
+    "th_keyword":     {"fr": "Mot-cle",          "en": "Keyword"},
+    "th_intent":      {"fr": "Intention",        "en": "Intent"},
+    "th_volume":      {"fr": "Volume",           "en": "Volume"},
+    "th_fanout":      {"fr": "Parent fan-out",   "en": "Fan-out parent"},
+    "th_coverage":    {"fr": "Couverture",       "en": "Coverage"},
+    "th_seed":        {"fr": "Seed",             "en": "Seed"},
+    "empty_no_keywords": {"fr": "Aucun mot-cle pour l'instant. Lance le skill keyword-researcher.",
+                          "en": "No keywords yet. Run the keyword-researcher skill."},
+    "empty_no_seeds": {"fr": "Aucun seed recherche pour l'instant.", "en": "No seeds researched yet."},
+
+    # Content queue
+    "stat_queued":      {"fr": "En file",       "en": "Queued"},
+    "stat_in_progress": {"fr": "En cours",      "en": "In progress"},
+    "stat_written":     {"fr": "Ecrits",        "en": "Written"},
+    "stat_needs_review":{"fr": "A relire",      "en": "Needs review"},
+    "stat_skipped":     {"fr": "Ignores",       "en": "Skipped"},
+    "empty_no_queue":   {"fr": "Aucun element en file. Lance le Systeme 1 pour remplir.",
+                         "en": "No items queued. Run System 1 to populate."},
+    "qc_primary":   {"fr": "primaire",  "en": "primary"},
+    "qc_vol":       {"fr": "vol",       "en": "vol"},
+    "qc_words":     {"fr": "mots",      "en": "words"},
+    "qc_money":     {"fr": "money page","en": "money page"},
+    "qc_view_post": {"fr": "voir l'article &nearr;", "en": "view post &nearr;"},
+    "qc_fanout":    {"fr": "Cluster fan-out",        "en": "Fan-out cluster"},
+    "qc_notes":     {"fr": "Notes pour le redacteur","en": "Notes for writer"},
+    "qc_internal":  {"fr": "Liens internes cibles",  "en": "Internal link targets"},
+    "qc_external":  {"fr": "Candidats d'autorite externe", "en": "External authority candidates"},
+    "qc_lifecycle": {"fr": "Cycle de vie",   "en": "Lifecycle"},
+    "qc_queued":    {"fr": "en file",        "en": "queued"},
+    "qc_written":   {"fr": "ecrit",          "en": "written"},
+    "qc_slug":      {"fr": "slug",           "en": "slug"},
+    "qc_none":      {"fr": "aucun",          "en": "none"},
+
+    # Onsite audit
+    "empty_no_onsite": {"fr": "Aucun audit onsite pour l'instant. Lance le skill onsite-audit ou planifie l'agent pour remplir.",
+                        "en": "No onsite audit yet. Run the onsite-audit skill or schedule the agent to populate."},
+    "stat_site_verdict": {"fr": "Verdict du site", "en": "Site verdict"},
+    "stat_performance":  {"fr": "Performance",     "en": "Performance"},
+    "stat_accessibility":{"fr": "Accessibilite",   "en": "Accessibility"},
+    "stat_best_practices":{"fr": "Bonnes pratiques","en": "Best Practices"},
+    "stat_seo":          {"fr": "SEO",             "en": "SEO"},
+    "panel_lighthouse":  {"fr": "Audit Lighthouse + on-page", "en": "Lighthouse + on-page audit"},
+    "panel_money_alerts":{"fr": "Alertes money page",        "en": "Money page alerts"},
+    "panel_concerns":    {"fr": "Preoccupations strategiques","en": "Strategic concerns"},
+    "ts_bvs_context":    {"fr": "contexte BVS, pas technique", "en": "BVS context, not technical"},
+    "concern_target_kw": {"fr": "mot-cle cible :", "en": "target keyword:"},
+    "panel_ai_policy":   {"fr": "Politique crawlers IA &amp; llms.txt", "en": "AI crawler policy &amp; llms.txt"},
+    "ai_no_robots":      {"fr": "aucune regle robots.txt capturee", "en": "no robots.txt rules captured"},
+    "ai_present":        {"fr": "present", "en": "present"},
+    "ai_missing":        {"fr": "absent",  "en": "missing"},
+    "panel_template":    {"fr": "Problemes au niveau template", "en": "Template-level issues"},
+    "ts_fix_once":       {"fr": "corrige une fois, eleve plusieurs pages", "en": "fix once, lift many pages"},
+    "th_issue":          {"fr": "Probleme",     "en": "Issue"},
+    "th_audit_id":       {"fr": "ID audit Lighthouse", "en": "Lighthouse audit ID"},
+    "th_affected":       {"fr": "URLs affectees","en": "Affected URLs"},
+    "th_severity":       {"fr": "Severite",      "en": "Severity"},
+    "empty_no_template": {"fr": "Aucun probleme au niveau template.", "en": "No template-level issues."},
+    "empty_no_urls":     {"fr": "Aucune URL auditee.", "en": "No URLs audited."},
+    "th_url":            {"fr": "URL",      "en": "URL"},
+    "th_verdict":        {"fr": "Verdict",  "en": "Verdict"},
+    "th_issues":         {"fr": "Problemes","en": "Issues"},
+    "panel_full_report": {"fr": "Rapport complet &amp; prochaines actions recommandees",
+                          "en": "Full report &amp; recommended next actions"},
+    "empty_no_audit_report": {"fr": "Aucun rapport d'audit pour l'instant.", "en": "No audit report yet."},
+
+    # Refresh queue
+    "stat_not_indexed":  {"fr": "Non indexees", "en": "Not indexed"},
+    "stat_index_warning":{"fr": "Alerte d'index","en": "Index warning"},
+    "stat_stale":        {"fr": "Obsoletes",    "en": "Stale"},
+    "stat_ctr_decay":    {"fr": "Chute de CTR", "en": "CTR decay"},
+    "stat_aio_loss":     {"fr": "Perte AIO",    "en": "AIO loss"},
+    "stat_actions_queued":{"fr": "Actions en file","en": "Actions queued"},
+    "panel_layer2":      {"fr": "Couche 2 &middot; actions recommandees", "en": "Layer 2 &middot; recommended actions"},
+    "ts_consumed_by":    {"fr": "consomme par vous (ou votre outil de refresh)",
+                          "en": "consumed by you (or your refresh tool)"},
+    "panel_layer1":      {"fr": "Couche 1 &middot; scan sitemap + indexation GSC",
+                          "en": "Layer 1 &middot; sitemap + GSC indexing scan"},
+    "ls_urls_evaluated": {"fr": "URLs evaluees", "en": "URLs evaluated"},
+    "ls_flagged":        {"fr": "signalees",     "en": "flagged"},
+    "panel_classif_report": {"fr": "Rapport de classification complet", "en": "Full classification report"},
+    "empty_no_classif":  {"fr": "Aucun rapport de classification pour l'instant.", "en": "No classification report yet."},
+    "th_serp_intent":    {"fr": "Intention SERP", "en": "SERP intent"},
+    "th_action":         {"fr": "Action",         "en": "Action"},
+    "th_primary_flag":   {"fr": "Flag principal",  "en": "Primary flag"},
+    "th_age":            {"fr": "Age (j)",         "en": "Age (d)"},
+    "th_content_gaps":   {"fr": "Lacunes contenu", "en": "Content gaps"},
+    "th_recommendation": {"fr": "Recommandation",  "en": "Recommendation"},
+    "th_flags":          {"fr": "Flags",           "en": "Flags"},
+    "th_coverage_state": {"fr": "Etat de couverture","en": "Coverage state"},
+    "th_last_crawl":     {"fr": "Dernier crawl",   "en": "Last crawl"},
+    "empty_no_candidates": {"fr": "Aucun candidat signale. Lance refresh-recommender pour scanner le sitemap et GSC.",
+                            "en": "No flagged candidates. Run refresh-recommender to scan the sitemap and GSC."},
+    "empty_no_actions":  {"fr": "Aucune action en file pour l'instant. Lance le refresh-recommender (couche 2) apres un scan couche 1.",
+                          "en": "No actions queued yet. Run the refresh-recommender (layer 2) after a layer-1 scan."},
+
+    # CTA
+    "cta_msg":      {"fr": "Envie d'aller plus loin avec ce systeme, ou un projet d'automatisation ?",
+                     "en": "Want to go further with this system, or have an automation project?"},
+    "cta_btn":      {"fr": "Prendre rendez-vous", "en": "Book a call"},
+}
+
+
+def t(key: str, *, cls: str = "", el: str = "span") -> str:
+    """Render the French default wrapped with data-i18n so the client can swap it.
+
+    cls adds extra classes; el lets callers emit a different inline element.
+    The baked text is always the French value (project default).
+    """
+    fr = I18N[key]["fr"]
+    class_attr = f' class="{cls}"' if cls else ""
+    return f'<{el} data-i18n="{key}"{class_attr}>{fr}</{el}>'
+
+
+def i18n_js_object() -> str:
+    """Serialize I18N as a compact JS object literal for the in-page dictionary."""
+    fr = {k: v["fr"] for k, v in I18N.items()}
+    en = {k: v["en"] for k, v in I18N.items()}
+    return json.dumps({"fr": fr, "en": en}, ensure_ascii=False)
 
 
 # ----------------------------- helpers --------------------------------------
@@ -230,6 +396,39 @@ def find_latest_vital_report() -> Path | None:
     return candidates[0] if candidates else None
 
 
+PLACEHOLDER_SITES = {"", "your-site.com", "www.your-site.com", "yoursite.com"}
+
+
+def resolve_site_name(bank: dict) -> str:
+    """Resolve the real site name to show in the header subtitle.
+
+    Resolution order:
+      1. state/keyword-bank.json -> "site" (non-empty, non-placeholder string)
+      2. context/site-config.md  -> first line matching "# Site: <domain>"
+      3. BRAND_NAME fallback
+    """
+    # 1. keyword-bank.json "site" field
+    bank_site = bank.get("site") if isinstance(bank, dict) else None
+    if isinstance(bank_site, str) and bank_site.strip() \
+            and bank_site.strip().lower() not in PLACEHOLDER_SITES:
+        return bank_site.strip()
+
+    # 2. context/site-config.md "# Site: <domain>"
+    if SITE_CONFIG.exists():
+        try:
+            for line in SITE_CONFIG.read_text().splitlines():
+                m = re.match(r"^\s*#\s*Site:\s*(\S+)", line)
+                if m:
+                    domain = m.group(1).strip()
+                    if domain and domain.lower() not in PLACEHOLDER_SITES:
+                        return domain
+        except Exception:
+            pass
+
+    # 3. fallback
+    return BRAND_NAME
+
+
 # ----------------------------- per-tab renderers -----------------------------
 
 def render_overview_tab(stats: dict, agent_log: list[dict]) -> str:
@@ -237,12 +436,12 @@ def render_overview_tab(stats: dict, agent_log: list[dict]) -> str:
         "GREEN": "--lime", "AMBER": "--amber", "RED": "--rose",
     }.get(stats.get("onsite_verdict","") or "", "--mint")
     big_stats = [
-        ("01", "System 1", "Keywords in bank", stats["kw_total"], "keywords", "--lime"),
-        ("02", "System 2", "Posts written / queued",
+        ("01", "System 1", t("stat_kw_bank"), stats["kw_total"], "keywords", "--lime"),
+        ("02", "System 2", t("stat_posts"),
          f'{stats["posts_written"]} <span style="opacity:.4;font-size:.5em;font-style:normal">/</span> {stats["queue_active"]}',
          "queue", "--mint"),
-        ("03", "System 3", "Onsite health verdict", stats["onsite_verdict"], "onsite", verdict_color),
-        ("04", "System 4", "Pages flagged for refresh", stats["refresh_queued"], "refresh", "--rose"),
+        ("03", "System 3", t("stat_onsite_verdict"), stats["onsite_verdict"], "onsite", verdict_color),
+        ("04", "System 4", t("stat_refresh"), stats["refresh_queued"], "refresh", "--rose"),
     ]
     cards = "\n".join(
         f'''<a class="hero-card" data-tab="{k}" data-anim-delay="{idx*60}" href="#{k}">
@@ -266,7 +465,7 @@ def render_overview_tab(stats: dict, agent_log: list[dict]) -> str:
               <td class="dim mono-sm">{esc(e.get("timestamp","")[:19].replace("T"," "))}</td>
             </tr>'''
         for e in agent_log[-12:][::-1]
-    ) or '<tr><td colspan="5" class="empty">No runs logged yet.</td></tr>'
+    ) or f'<tr><td colspan="5" class="empty">{t("empty_no_runs")}</td></tr>'
 
     return f'''
 <section class="tab-pane" id="tab-overview" data-tab-pane="overview">
@@ -275,10 +474,10 @@ def render_overview_tab(stats: dict, agent_log: list[dict]) -> str:
   </div>
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Recent activity <span class="ts">last 12 runs</span></h2>
+      <h2 class="panel-title">{t("panel_recent")} {t("ts_last12", cls="ts")}</h2>
     </div>
     <table class="data-table">
-      <thead><tr><th></th><th>Agent</th><th>Status</th><th>Duration</th><th>Timestamp (UTC)</th></tr></thead>
+      <thead><tr><th></th><th>{t("th_agent")}</th><th>{t("th_status")}</th><th>{t("th_duration")}</th><th>{t("th_timestamp")}</th></tr></thead>
       <tbody>{log_rows}</tbody>
     </table>
   </div>
@@ -335,38 +534,38 @@ def render_keywords_tab(bank: dict) -> str:
             </tr>'''
 
     rows = "".join(_kw_row(k) for k in keywords_sorted) or \
-        '<tr><td colspan="9" class="empty">No keywords yet. Run the keyword-researcher skill.</td></tr>'
+        f'<tr><td colspan="9" class="empty">{t("empty_no_keywords")}</td></tr>'
 
     seeds = bank.get("seeds_researched", [])
     seeds_html = "".join(
         f'<li><span class="mono">{esc(s["seed"])}</span><span class="dim mono-sm"> &middot; {esc(s["last_researched"])}</span></li>'
         for s in seeds
-    ) or '<li class="dim">No seeds researched yet.</li>'
+    ) or f'<li class="dim">{t("empty_no_seeds")}</li>'
 
     return f'''
 <section class="tab-pane" id="tab-keywords" data-tab-pane="keywords">
   <div class="stat-row">
-    <div class="stat"><div class="stat-num">{len(keywords)}</div><div class="stat-label">In bank</div></div>
+    <div class="stat"><div class="stat-num">{len(keywords)}</div><div class="stat-label">{t("stat_in_bank")}</div></div>
     <div class="stat"><div class="stat-num" style="--c:var(--lime)">{bvs_bands["8_to_10"]}</div><div class="stat-label">BVS 8-10</div></div>
     <div class="stat"><div class="stat-num" style="--c:var(--amber)">{bvs_bands["5_to_7"]}</div><div class="stat-label">BVS 5-7</div></div>
     <div class="stat"><div class="stat-num" style="--c:var(--sky)">{bvs_bands["2_to_4"]}</div><div class="stat-label">BVS 2-4</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{bvs_bands["0_to_1"] + p_counts["skip"]}</div><div class="stat-label">Skip / zero-click</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{bvs_bands["0_to_1"] + p_counts["skip"]}</div><div class="stat-label">{t("stat_skip_zero")}</div></div>
   </div>
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Keyword bank</h2>
-      <span class="ts">{len(keywords)} entries &middot; sorted by BVS &darr; volume &darr;</span>
+      <h2 class="panel-title">{t("panel_kw_bank")}</h2>
+      <span class="ts">{len(keywords)} {t("kw_sorted_suffix")}</span>
     </div>
     <table class="data-table">
       <thead><tr>
-        <th>Keyword</th><th>Intent</th><th class="r">Volume</th><th class="r">KD</th>
-        <th class="c">BVS</th><th class="c">P</th><th>Fan-out parent</th><th>Coverage</th><th>Seed</th>
+        <th>{t("th_keyword")}</th><th>{t("th_intent")}</th><th class="r">{t("th_volume")}</th><th class="r">KD</th>
+        <th class="c">BVS</th><th class="c">P</th><th>{t("th_fanout")}</th><th>{t("th_coverage")}</th><th>{t("th_seed")}</th>
       </tr></thead>
       <tbody>{rows}</tbody>
     </table>
   </div>
   <div class="panel">
-    <div class="panel-head"><h2 class="panel-title">Seeds researched</h2></div>
+    <div class="panel-head"><h2 class="panel-title">{t("panel_seeds")}</h2></div>
     <ul class="seed-list">{seeds_html}</ul>
   </div>
 </section>'''
@@ -389,16 +588,16 @@ def render_queue_tab(queue: dict) -> str:
               ["queued","in_progress","written","needs_review","skipped"]}
 
     cards = "\n".join(_render_queue_card(i) for i in items_sorted) or \
-        '<div class="empty-state">No items queued. Run System 1 to populate.</div>'
+        f'<div class="empty-state">{t("empty_no_queue")}</div>'
 
     return f'''
 <section class="tab-pane" id="tab-queue" data-tab-pane="queue">
   <div class="stat-row">
-    <div class="stat"><div class="stat-num" style="--c:var(--lime)">{counts["queued"]}</div><div class="stat-label">Queued</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--amber)">{counts["in_progress"]}</div><div class="stat-label">In progress</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--mint)">{counts["written"]}</div><div class="stat-label">Written</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{counts["needs_review"]}</div><div class="stat-label">Needs review</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--dim)">{counts["skipped"]}</div><div class="stat-label">Skipped</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--lime)">{counts["queued"]}</div><div class="stat-label">{t("stat_queued")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--amber)">{counts["in_progress"]}</div><div class="stat-label">{t("stat_in_progress")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--mint)">{counts["written"]}</div><div class="stat-label">{t("stat_written")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{counts["needs_review"]}</div><div class="stat-label">{t("stat_needs_review")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--dim)">{counts["skipped"]}</div><div class="stat-label">{t("stat_skipped")}</div></div>
   </div>
   <div class="queue-stack">{cards}</div>
 </section>'''
@@ -416,13 +615,13 @@ def _render_queue_card(item: dict) -> str:
     )
     post_link = ""
     if item.get("post_url"):
-        post_link = f'<a class="link-sm" href="{esc(item["post_url"])}" target="_blank">view post &nearr;</a>'
+        post_link = f'<a class="link-sm" href="{esc(item["post_url"])}" target="_blank">{t("qc_view_post")}</a>'
 
     title = item.get("suggested_title") or item.get("primary_keyword", "")
     primary = item.get("primary_keyword", "")
     mp_target = item.get("money_page_target")
     mp_html = (
-        f'<span><span class="dim">money page</span> <a href="{esc(mp_target)}" target="_blank" class="link-sm">{esc(mp_target)}</a></span>'
+        f'<span>{t("qc_money", cls="dim")} <a href="{esc(mp_target)}" target="_blank" class="link-sm">{esc(mp_target)}</a></span>'
         if mp_target else ""
     )
     return f'''
@@ -437,31 +636,31 @@ def _render_queue_card(item: dict) -> str:
     </div>
     <h3 class="queue-card-title">{esc(title)}</h3>
     <div class="queue-card-stats">
-      <span><span class="dim">primary</span> <code>{esc(primary)}</code></span>
-      <span><span class="dim">vol</span> <strong>{fmt_int(item.get("volume"))}</strong></span>
+      <span>{t("qc_primary", cls="dim")} <code>{esc(primary)}</code></span>
+      <span>{t("qc_vol", cls="dim")} <strong>{fmt_int(item.get("volume"))}</strong></span>
       <span><span class="dim">kd</span> <strong>{esc(item.get("kd")) or "&mdash;"}</strong></span>
-      <span><span class="dim">words</span> <strong>{esc(item.get("target_word_count")) or "&mdash;"}</strong></span>
+      <span>{t("qc_words", cls="dim")} <strong>{esc(item.get("target_word_count")) or "&mdash;"}</strong></span>
       {mp_html}
       {post_link}
     </div>
   </summary>
   <div class="queue-card-body">
     <div class="qcb-col">
-      <h4>Fan-out cluster</h4>
-      <ul class="dense">{fan_out or '<li class="dim">none</li>'}</ul>
-      <h4>Notes for writer</h4>
+      <h4>{t("qc_fanout")}</h4>
+      <ul class="dense">{fan_out or f'<li class="dim">{t("qc_none")}</li>'}</ul>
+      <h4>{t("qc_notes")}</h4>
       <p>{esc(item.get("notes",""))}</p>
     </div>
     <div class="qcb-col">
-      <h4>Internal link targets</h4>
-      <ul class="dense link-list">{internal or '<li class="dim">none</li>'}</ul>
-      <h4>External authority candidates</h4>
-      <ul class="dense link-list">{external or '<li class="dim">none</li>'}</ul>
-      <h4>Lifecycle</h4>
+      <h4>{t("qc_internal")}</h4>
+      <ul class="dense link-list">{internal or f'<li class="dim">{t("qc_none")}</li>'}</ul>
+      <h4>{t("qc_external")}</h4>
+      <ul class="dense link-list">{external or f'<li class="dim">{t("qc_none")}</li>'}</ul>
+      <h4>{t("qc_lifecycle")}</h4>
       <dl class="meta-dl">
-        <dt>queued</dt><dd>{esc(item.get("queued_at") or "&mdash;")}</dd>
-        <dt>written</dt><dd>{esc(item.get("written_at") or "&mdash;")}</dd>
-        <dt>slug</dt><dd><code>{esc(item.get("suggested_slug") or "")}</code></dd>
+        <dt>{t("qc_queued")}</dt><dd>{esc(item.get("queued_at") or "&mdash;")}</dd>
+        <dt>{t("qc_written")}</dt><dd>{esc(item.get("written_at") or "&mdash;")}</dd>
+        <dt>{t("qc_slug")}</dt><dd><code>{esc(item.get("suggested_slug") or "")}</code></dd>
       </dl>
     </div>
   </div>
@@ -502,23 +701,23 @@ def render_onsite_tab(onsite: dict) -> str:
     last_scan = onsite.get("generated_at", "")
 
     if not onsite:
-        body = '''<div class="empty-state">No onsite audit yet. Run the <code>onsite-audit</code> skill or schedule the agent to populate.</div>'''
+        body = f'<div class="empty-state">{t("empty_no_onsite")}</div>'
         return f'<section class="tab-pane" data-tab-pane="onsite">{body}</section>'
 
     # Per-URL rows
     rows = "".join(_render_onsite_row(u) for u in audited) or \
-        '<tr><td colspan="9" class="empty">No URLs audited.</td></tr>'
+        f'<tr><td colspan="9" class="empty">{t("empty_no_urls")}</td></tr>'
 
     # Template issues
     template_rows = "".join(
         f'''<tr>
-              <td>{esc(t.get("title") or t.get("id"))}</td>
-              <td><code>{esc(t.get("id"))}</code></td>
-              <td class="c">{esc(t.get("affected_urls"))}</td>
-              <td>{flag_chip(t.get("severity","medium"))}</td>
+              <td>{esc(ti.get("title") or ti.get("id"))}</td>
+              <td><code>{esc(ti.get("id"))}</code></td>
+              <td class="c">{esc(ti.get("affected_urls"))}</td>
+              <td>{flag_chip(ti.get("severity","medium"))}</td>
             </tr>'''
-        for t in template_issues
-    ) or '<tr><td colspan="4" class="empty">No template-level issues.</td></tr>'
+        for ti in template_issues
+    ) or f'<tr><td colspan="4" class="empty">{t("empty_no_template")}</td></tr>'
 
     # Money page alerts
     money_html = ""
@@ -529,7 +728,7 @@ def render_onsite_tab(onsite: dict) -> str:
                   <span class="dim"> &middot; </span>{esc(m.get("main_issue"))}</li>'''
             for m in money_alerts
         )
-        money_html = f'<div class="panel"><div class="panel-head"><h2 class="panel-title">Money page alerts</h2></div><ul class="dense" style="padding:16px 20px">{items}</ul></div>'
+        money_html = f'<div class="panel"><div class="panel-head"><h2 class="panel-title">{t("panel_money_alerts")}</h2></div><ul class="dense" style="padding:16px 20px">{items}</ul></div>'
 
     # Find the latest onsite-audit markdown report and embed it
     report_path = None
@@ -540,7 +739,7 @@ def render_onsite_tab(onsite: dict) -> str:
         report_html = md_to_html(report_path.read_text())
         report_meta = f'<span class="ts">{esc(report_path.name)}</span>'
     else:
-        report_html = '<p class="empty">No audit report yet.</p>'
+        report_html = f'<p class="empty">{t("empty_no_audit_report")}</p>'
         report_meta = ""
 
     # Strategic concerns (BVS context, not technical)
@@ -551,12 +750,12 @@ def render_onsite_tab(onsite: dict) -> str:
             f'''<li><a href="{esc(c.get("url"))}" target="_blank" class="mono-sm link-sm">{esc(c.get("url",""))}</a>
                   <span class="dim"> &middot; </span>{bvs_pill((c.get("bvs_context") or {}).get("bvs"))}
                   <span class="dim"> &middot; </span>{trap_chip(c.get("bvs_context") or {})}
-                  <span class="dim"> &middot; target keyword: </span><code>{esc((c.get("bvs_context") or {}).get("target_keyword") or "&mdash;")}</code></li>'''
+                  <span class="dim"> &middot; </span>{t("concern_target_kw", cls="dim")} <code>{esc((c.get("bvs_context") or {}).get("target_keyword") or "&mdash;")}</code></li>'''
             for c in concerns
         )
         concerns_html = (
             f'<div class="panel"><div class="panel-head">'
-            f'<h2 class="panel-title">Strategic concerns <span class="ts">BVS context, not technical</span></h2></div>'
+            f'<h2 class="panel-title">{t("panel_concerns")} {t("ts_bvs_context", cls="ts")}</h2></div>'
             f'<ul class="dense" style="padding:16px 20px">{items}</ul></div>'
         )
 
@@ -569,14 +768,18 @@ def render_onsite_tab(onsite: dict) -> str:
         def _pol_chip(bot, state):
             c = {"allowed": "--lime", "disallowed": "--rose", "not_mentioned": "--dim"}.get(state, "--dim")
             return f'<span class="chip" style="--c:var({c})">{esc(bot)}: {esc(state)}</span>'
-        bots_html = " ".join(_pol_chip(b, s) for b, s in ai_pol.items()) or '<span class="dim">no robots.txt rules captured</span>'
+        bots_html = " ".join(_pol_chip(b, s) for b, s in ai_pol.items()) or f'<span class="dim">{t("ai_no_robots")}</span>'
+        llms_lbl = I18N["ai_present"]["fr"] if llms_present else I18N["ai_missing"]["fr"]
+        llms_full_lbl = I18N["ai_present"]["fr"] if llms_full_present else I18N["ai_missing"]["fr"]
         ll_html = (
-            f'<span class="chip" style="--c:var({"--lime" if llms_present else "--dim"})">/llms.txt: {"present" if llms_present else "missing"}</span> '
-            f'<span class="chip" style="--c:var({"--lime" if llms_full_present else "--dim"})">/llms-full.txt: {"present" if llms_full_present else "missing"}</span>'
+            f'<span class="chip" style="--c:var({"--lime" if llms_present else "--dim"})">/llms.txt: '
+            f'<span data-i18n="{"ai_present" if llms_present else "ai_missing"}" style="margin-left:3px">{llms_lbl}</span></span> '
+            f'<span class="chip" style="--c:var({"--lime" if llms_full_present else "--dim"})">/llms-full.txt: '
+            f'<span data-i18n="{"ai_present" if llms_full_present else "ai_missing"}" style="margin-left:3px">{llms_full_lbl}</span></span>'
         )
         ai_html = (
             f'<div class="panel"><div class="panel-head">'
-            f'<h2 class="panel-title">AI crawler policy &amp; llms.txt</h2></div>'
+            f'<h2 class="panel-title">{t("panel_ai_policy")}</h2></div>'
             f'<div style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">{bots_html}</div>'
             f'<div style="padding:0 20px 16px 20px">{ll_html}</div></div>'
         )
@@ -584,27 +787,27 @@ def render_onsite_tab(onsite: dict) -> str:
     return f'''
 <section class="tab-pane" data-tab-pane="onsite">
   <div class="stat-row">
-    <div class="stat"><div class="stat-num" style="--c:var({"--lime" if site_verdict=="green" else "--amber" if site_verdict=="amber" else "--rose"})">{esc(site_verdict.upper() if site_verdict else "&mdash;")}</div><div class="stat-label">Site verdict</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('performance') or 0) >= 90 else 'amber' if (avg.get('performance') or 0) >= 70 else 'rose'})">{esc(avg.get("performance","&mdash;"))}</div><div class="stat-label">Performance</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('accessibility') or 0) >= 90 else 'amber' if (avg.get('accessibility') or 0) >= 70 else 'rose'})">{esc(avg.get("accessibility","&mdash;"))}</div><div class="stat-label">Accessibility</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('best_practices') or 0) >= 90 else 'amber' if (avg.get('best_practices') or 0) >= 70 else 'rose'})">{esc(avg.get("best_practices","&mdash;"))}</div><div class="stat-label">Best Practices</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('seo') or 0) >= 90 else 'amber' if (avg.get('seo') or 0) >= 70 else 'rose'})">{esc(avg.get("seo","&mdash;"))}</div><div class="stat-label">SEO</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var({"--lime" if site_verdict=="green" else "--amber" if site_verdict=="amber" else "--rose"})">{esc(site_verdict.upper() if site_verdict else "&mdash;")}</div><div class="stat-label">{t("stat_site_verdict")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('performance') or 0) >= 90 else 'amber' if (avg.get('performance') or 0) >= 70 else 'rose'})">{esc(avg.get("performance","&mdash;"))}</div><div class="stat-label">{t("stat_performance")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('accessibility') or 0) >= 90 else 'amber' if (avg.get('accessibility') or 0) >= 70 else 'rose'})">{esc(avg.get("accessibility","&mdash;"))}</div><div class="stat-label">{t("stat_accessibility")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('best_practices') or 0) >= 90 else 'amber' if (avg.get('best_practices') or 0) >= 70 else 'rose'})">{esc(avg.get("best_practices","&mdash;"))}</div><div class="stat-label">{t("stat_best_practices")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--{'lime' if (avg.get('seo') or 0) >= 90 else 'amber' if (avg.get('seo') or 0) >= 70 else 'rose'})">{esc(avg.get("seo","&mdash;"))}</div><div class="stat-label">{t("stat_seo")}</div></div>
   </div>
 
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Lighthouse + on-page audit <span class="ts">{esc(len(audited))} URL{"s" if len(audited)!=1 else ""}</span></h2>
+      <h2 class="panel-title">{t("panel_lighthouse")} <span class="ts">{esc(len(audited))} URL{"s" if len(audited)!=1 else ""}</span></h2>
       <span class="ts">{esc(last_scan)}</span>
     </div>
     <table class="data-table">
       <thead><tr>
-        <th>URL</th><th>Verdict</th>
+        <th>{t("th_url")}</th><th>{t("th_verdict")}</th>
         <th class="r">Perf</th><th class="r">A11y</th>
         <th class="r">BP</th><th class="r">SEO</th>
         <th class="r">LCP</th><th class="r">CLS</th>
         <th class="r">INP</th>
         <th class="c">BVS</th>
-        <th class="r">Issues</th>
+        <th class="r">{t("th_issues")}</th>
       </tr></thead>
       <tbody>{rows}</tbody>
     </table>
@@ -617,17 +820,17 @@ def render_onsite_tab(onsite: dict) -> str:
 
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Template-level issues <span class="ts">fix once, lift many pages</span></h2>
+      <h2 class="panel-title">{t("panel_template")} {t("ts_fix_once", cls="ts")}</h2>
     </div>
     <table class="data-table">
-      <thead><tr><th>Issue</th><th>Lighthouse audit ID</th><th class="c">Affected URLs</th><th>Severity</th></tr></thead>
+      <thead><tr><th>{t("th_issue")}</th><th>{t("th_audit_id")}</th><th class="c">{t("th_affected")}</th><th>{t("th_severity")}</th></tr></thead>
       <tbody>{template_rows}</tbody>
     </table>
   </div>
 
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Full report &amp; recommended next actions</h2>
+      <h2 class="panel-title">{t("panel_full_report")}</h2>
       {report_meta}
     </div>
     <article class="md-content">{report_html}</article>
@@ -727,7 +930,7 @@ def render_refresh_tab(candidates: dict, refresh: dict) -> str:
     flagged_cands = [c for c in cand_list if c.get("flags")]
     cand_rows = "".join(
         _render_candidate_row(c) for c in flagged_cands[:60]
-    ) or '<tr><td colspan="5" class="empty">No flagged candidates. Run refresh-recommender to scan the sitemap and GSC.</td></tr>'
+    ) or f'<tr><td colspan="5" class="empty">{t("empty_no_candidates")}</td></tr>'
 
     # Sort layer-2 items by priority asc, then BVS desc within the band, then age desc.
     def _refresh_key(i):
@@ -769,7 +972,7 @@ def render_refresh_tab(candidates: dict, refresh: dict) -> str:
               <td>{status_pill(i.get("status",""))}</td>
             </tr>'''
         for i in refresh_items_sorted
-    ) or '<tr><td colspan="12" class="empty">No actions queued yet. Run the refresh-recommender (layer 2) after a layer-1 scan.</td></tr>'
+    ) or f'<tr><td colspan="12" class="empty">{t("empty_no_actions")}</td></tr>'
 
     # Embedded classification report
     report_path = None
@@ -780,31 +983,31 @@ def render_refresh_tab(candidates: dict, refresh: dict) -> str:
         report_html = md_to_html(report_path.read_text())
         report_meta = f'<span class="ts">{esc(report_path.name)}</span>'
     else:
-        report_html = '<p class="empty">No classification report yet.</p>'
+        report_html = f'<p class="empty">{t("empty_no_classif")}</p>'
         report_meta = ""
 
     return f'''
 <section class="tab-pane" data-tab-pane="refresh">
   <div class="stat-row">
-    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{by_flag.get("not_indexed",0)}</div><div class="stat-label">Not indexed</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--sky)">{by_flag.get("index_warning",0)}</div><div class="stat-label">Index warning</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--amber)">{by_flag.get("stale", by_flag.get("stale_12mo",0))}</div><div class="stat-label">Stale</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--amber)">{by_flag.get("ctr_decay",0)}</div><div class="stat-label">CTR decay</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{sum(1 for i in refresh_items if i.get("aio_loss"))}</div><div class="stat-label">AIO loss</div></div>
-    <div class="stat"><div class="stat-num" style="--c:var(--lime)">{by_action.get("refresh",0) + by_action.get("request_indexing",0) + by_action.get("fix_canonical",0) + by_action.get("audit_then_decide",0) + by_action.get("consider_consolidate_or_remove",0)}</div><div class="stat-label">Actions queued</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{by_flag.get("not_indexed",0)}</div><div class="stat-label">{t("stat_not_indexed")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--sky)">{by_flag.get("index_warning",0)}</div><div class="stat-label">{t("stat_index_warning")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--amber)">{by_flag.get("stale", by_flag.get("stale_12mo",0))}</div><div class="stat-label">{t("stat_stale")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--amber)">{by_flag.get("ctr_decay",0)}</div><div class="stat-label">{t("stat_ctr_decay")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--rose)">{sum(1 for i in refresh_items if i.get("aio_loss"))}</div><div class="stat-label">{t("stat_aio_loss")}</div></div>
+    <div class="stat"><div class="stat-num" style="--c:var(--lime)">{by_action.get("refresh",0) + by_action.get("request_indexing",0) + by_action.get("fix_canonical",0) + by_action.get("audit_then_decide",0) + by_action.get("consider_consolidate_or_remove",0)}</div><div class="stat-label">{t("stat_actions_queued")}</div></div>
   </div>
 
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Layer 2 &middot; recommended actions</h2>
-      <span class="ts">consumed by you (or your refresh tool)</span>
+      <h2 class="panel-title">{t("panel_layer2")}</h2>
+      {t("ts_consumed_by", cls="ts")}
     </div>
     <table class="data-table refresh-table">
       <thead><tr>
-        <th>URL</th><th>Keyword</th><th>SERP intent</th><th>Action</th>
+        <th>{t("th_url")}</th><th>{t("th_keyword")}</th><th>{t("th_serp_intent")}</th><th>{t("th_action")}</th>
         <th class="c">BVS</th><th class="c">P</th>
-        <th>Primary flag</th><th>AIO / CTR</th><th class="r">Age (d)</th>
-        <th>Content gaps</th><th>Recommendation</th><th>Status</th>
+        <th>{t("th_primary_flag")}</th><th>AIO / CTR</th><th class="r">{t("th_age")}</th>
+        <th>{t("th_content_gaps")}</th><th>{t("th_recommendation")}</th><th>{t("th_status")}</th>
       </tr></thead>
       <tbody>{refresh_rows}</tbody>
     </table>
@@ -812,13 +1015,13 @@ def render_refresh_tab(candidates: dict, refresh: dict) -> str:
 
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Layer 1 &middot; sitemap + GSC indexing scan</h2>
-      <span class="ts">{esc(last_scan)} &middot; {urls_evaluated} URLs evaluated &middot; {len(flagged_cands)} flagged</span>
+      <h2 class="panel-title">{t("panel_layer1")}</h2>
+      <span class="ts">{esc(last_scan)} &middot; {urls_evaluated} {t("ls_urls_evaluated")} &middot; {len(flagged_cands)} {t("ls_flagged")}</span>
     </div>
     <table class="data-table">
       <thead><tr>
-        <th>URL</th><th>Flags</th><th class="r">Age (d)</th>
-        <th>Coverage state</th><th class="dim">Last crawl</th>
+        <th>{t("th_url")}</th><th>{t("th_flags")}</th><th class="r">{t("th_age")}</th>
+        <th>{t("th_coverage_state")}</th><th class="dim">{t("th_last_crawl")}</th>
       </tr></thead>
       <tbody>{cand_rows}</tbody>
     </table>
@@ -826,7 +1029,7 @@ def render_refresh_tab(candidates: dict, refresh: dict) -> str:
 
   <div class="panel">
     <div class="panel-head">
-      <h2 class="panel-title">Full classification report</h2>
+      <h2 class="panel-title">{t("panel_classif_report")}</h2>
       {report_meta}
     </div>
     <article class="md-content">{report_html}</article>
@@ -857,23 +1060,23 @@ def _render_candidate_row(c: dict) -> str:
 
 CSS = r"""
 :root {
-  --bg: #F2EFE7;
-  --bg-2: #FBFAF6;
-  --bg-3: #EDEAE2;
-  --line: #D9D3C6;
-  --line-2: #C9C3B3;
-  --fg: #0B0D0E;
-  --fg-2: #1F2223;
-  --dim: #6B6A63;
-  --ghost: #9A9485;
-  --lime: #557300;
-  --mint: #0F766E;
-  --amber: #A15C00;
-  --rose: #A62D3D;
-  --sky: #1D5E7A;
-  --paper: #F2EFE7;
-  --paper-light: #FBFAF6;
-  --ink: #0B0D0E;
+  --bg: #0B0B0C;
+  --bg-2: #141416;
+  --bg-3: #1C1C1F;
+  --line: rgba(255,255,255,0.08);
+  --line-2: rgba(255,255,255,0.16);
+  --fg: #ECECEA;
+  --fg-2: #B8B8B4;
+  --dim: #6E6E6A;
+  --ghost: #4A4A47;
+  --lime: #C7FF4A;
+  --mint: #4ED6B8;
+  --amber: #F0B454;
+  --rose: #F26D7D;
+  --sky: #6CC2E6;
+  --paper: #0B0B0C;
+  --paper-light: #141416;
+  --ink: #0B0B0C;
   --signal: #C7FF4A;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -896,7 +1099,7 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
 /* ----- top bar ----- */
 .topbar {
   border-bottom: 1px solid var(--line);
-  background: rgba(242,239,231,0.9);
+  background: rgba(11,11,12,0.92);
   backdrop-filter: blur(12px);
   position: sticky; top: 0; z-index: 100;
 }
@@ -959,13 +1162,13 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
 .live-stamp .pulse {
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--lime);
-  box-shadow: 0 0 0 0 rgba(163,230,53,0.5);
+  box-shadow: 0 0 0 0 rgba(199,255,74,0.5);
   animation: pulse 2.4s infinite;
 }
 @keyframes pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(163,230,53,0.5); }
-  70%  { box-shadow: 0 0 0 10px rgba(163,230,53,0); }
-  100% { box-shadow: 0 0 0 0 rgba(163,230,53,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(199,255,74,0.5); }
+  70%  { box-shadow: 0 0 0 10px rgba(199,255,74,0); }
+  100% { box-shadow: 0 0 0 0 rgba(199,255,74,0); }
 }
 
 /* ----- tab strip ----- */
@@ -1386,10 +1589,10 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
   z-index: 200;
   width: 290px;
   background: var(--bg-2);
-  border: 1px solid rgba(85,115,0,0.35);
+  border: 1px solid rgba(199,255,74,0.35);
   border-radius: 2px;
   padding: 18px 20px 16px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.04);
   font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 .cta-card-dismiss {
@@ -1421,7 +1624,7 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
 .cta-card-btn {
   display: inline-block;
   background: var(--lime);
-  color: var(--ink, #0B0D0E);
+  color: var(--ink, #0B0B0C);
   font-family: 'Geist Mono', monospace;
   font-size: 11px;
   font-weight: 600;
@@ -1434,6 +1637,79 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
 }
 .cta-card-btn:hover { opacity: 0.85; }
 .main { padding-bottom: 100px; }
+
+/* ----- CTA banner (in-flow, every tab) ----- */
+.cta-band {
+  margin-top: 48px;
+  background: var(--bg-2);
+  border: 1px solid rgba(199,255,74,0.35);
+  border-radius: 4px;
+  padding: 28px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.03);
+  font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.cta-band-copy { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.cta-band-overline {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--lime);
+}
+.cta-band-msg {
+  font-size: 15px;
+  color: var(--fg);
+  line-height: 1.45;
+}
+.cta-band-btn {
+  display: inline-block;
+  flex-shrink: 0;
+  background: var(--lime);
+  color: var(--ink, #0B0B0C);
+  font-family: 'Geist Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 12px 22px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.cta-band-btn:hover { opacity: 0.85; }
+@media (max-width: 720px) {
+  .cta-band { flex-direction: column; align-items: flex-start; }
+}
+
+/* ----- language switcher ----- */
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  margin-left: 18px;
+}
+.lang-btn {
+  background: none;
+  border: none;
+  color: var(--dim);
+  cursor: pointer;
+  padding: 2px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: color 0.15s;
+  font-family: inherit;
+  font-size: inherit;
+}
+.lang-btn:hover { color: var(--fg-2); }
+.lang-btn.active { color: var(--lime); }
+.lang-sep { color: var(--ghost); }
 """
 
 JS = r"""
@@ -1470,6 +1746,34 @@ JS = r"""
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   });
+
+  // ----- i18n: French default, FR/EN toggle -----
+  // I18N is injected just before this script as window.I18N (fr/en dicts of
+  // trusted chrome strings). innerHTML is used so HTML entities in the strings
+  // (&middot;, &darr;, &amp;) render; these are author-controlled, never data.
+  var I18N = window.I18N || { fr: {}, en: {} };
+  function setLang(lang) {
+    if (lang !== 'fr' && lang !== 'en') lang = 'fr';
+    var dict = I18N[lang] || {};
+    document.querySelectorAll('[data-i18n]').forEach(function(el) {
+      var key = el.getAttribute('data-i18n');
+      if (Object.prototype.hasOwnProperty.call(dict, key)) {
+        el.innerHTML = dict[key];
+      }
+    });
+    document.querySelectorAll('.lang-btn').forEach(function(b) {
+      b.classList.toggle('active', b.dataset.lang === lang);
+    });
+    document.documentElement.setAttribute('lang', lang);
+    try { localStorage.setItem('fs_lang', lang); } catch (e) {}
+  }
+  window.setLang = setLang;
+  document.querySelectorAll('.lang-btn').forEach(function(b) {
+    b.addEventListener('click', function() { setLang(b.dataset.lang); });
+  });
+  var saved = 'fr';
+  try { saved = localStorage.getItem('fs_lang') || 'fr'; } catch (e) {}
+  setLang(saved);
 })();
 """
 
@@ -1514,20 +1818,36 @@ def main() -> int:
     onsite_html = render_onsite_tab(onsite)
     refresh_html = render_refresh_tab(candidates, refresh)
 
-    placeholder_sites = {"", "your-site.com", "www.your-site.com", "yoursite.com"}
-    site = (
-        bank.get("site")
-        or (onsite.get("site") if isinstance(onsite, dict) else "")
-        or (candidates.get("site") if isinstance(candidates, dict) else "")
-        or (refresh.get("site") if isinstance(refresh, dict) else "")
-        or BRAND_NAME
-    )
-    if str(site).strip().lower() in placeholder_sites:
-        site = BRAND_NAME
+    site = resolve_site_name(bank)
     site_short = site.replace("https://", "").replace("http://", "").rstrip("/")
 
+    brand_overline = esc(BRAND_NAME).upper()
+    cta_msg = I18N["cta_msg"]["fr"]
+    cta_btn = I18N["cta_btn"]["fr"]
+
+    # CTA popup (fixed bottom-right). Texts are i18n-tagged so setLang swaps them.
+    cta_popup = f"""
+<div id="cta-card" class="cta-card">
+  <button class="cta-card-dismiss" onclick="document.getElementById('cta-card').style.display='none'" aria-label="Fermer">x</button>
+  <div class="cta-card-overline">{brand_overline}</div>
+  <p class="cta-card-body" data-i18n="cta_msg">{cta_msg}</p>
+  <a class="cta-card-btn" href="{ZCAL_URL}" target="_blank" rel="noopener" data-i18n="cta_btn">{cta_btn}</a>
+</div>""" if CTA_STYLE in ("popup", "both") else ""
+
+    # CTA banner (in document flow, appears on every tab via the shared container).
+    cta_banner = f"""
+  <aside class="cta-band">
+    <div class="cta-band-copy">
+      <span class="cta-band-overline">{brand_overline}</span>
+      <span class="cta-band-msg" data-i18n="cta_msg">{cta_msg}</span>
+    </div>
+    <a class="cta-band-btn" href="{ZCAL_URL}" target="_blank" rel="noopener" data-i18n="cta_btn">{cta_btn}</a>
+  </aside>""" if CTA_STYLE in ("banner", "both") else ""
+
+    i18n_script = f'<script>window.I18N = {i18n_js_object()};</script>'
+
     page = f"""<!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1545,23 +1865,28 @@ def main() -> int:
       <span class="brand-logo" aria-hidden="true"><i></i></span>
       <span class="brand-copy">
         <a class="brand-mark brand-mark-link" href="https://easygrowth.fr" target="_blank" rel="noopener">{esc(BRAND_WORDMARK)}</a>
-        <span class="brand-sub">SEO report &middot; {esc(site_short)}</span>
+        <span class="brand-sub">{t("brand_sub")} &middot; {esc(site_short)}</span>
       </span>
     </div>
     <div class="live-stamp">
       <span class="pulse"></span>
-      <span>last updated {esc(NOW)}</span>
+      <span>{t("last_updated")} {esc(NOW)}</span>
+      <span class="lang-switch" role="group" aria-label="Language">
+        <button type="button" class="lang-btn" data-lang="fr">FR</button>
+        <span class="lang-sep">|</span>
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+      </span>
     </div>
   </div>
 </header>
 
 <nav class="tabs">
   <div class="tabs-inner">
-    <button class="tab" data-tab="overview"><span class="tab-num">00</span> overview</button>
-    <button class="tab" data-tab="keywords"><span class="tab-num">01</span> keywords <span class="tab-count">{counts_by_tab["keywords"]}</span></button>
-    <button class="tab" data-tab="queue"><span class="tab-num">02</span> content queue <span class="tab-count">{counts_by_tab["queue"]}</span></button>
-    <button class="tab" data-tab="onsite"><span class="tab-num">03</span> onsite audit <span class="tab-count">{counts_by_tab["onsite"]}</span></button>
-    <button class="tab" data-tab="refresh"><span class="tab-num">04</span> refresh queue <span class="tab-count">{counts_by_tab["refresh"]}</span></button>
+    <button class="tab" data-tab="overview"><span class="tab-num">00</span> {t("tab_overview")}</button>
+    <button class="tab" data-tab="keywords"><span class="tab-num">01</span> {t("tab_keywords")} <span class="tab-count">{counts_by_tab["keywords"]}</span></button>
+    <button class="tab" data-tab="queue"><span class="tab-num">02</span> {t("tab_queue")} <span class="tab-count">{counts_by_tab["queue"]}</span></button>
+    <button class="tab" data-tab="onsite"><span class="tab-num">03</span> {t("tab_onsite")} <span class="tab-count">{counts_by_tab["onsite"]}</span></button>
+    <button class="tab" data-tab="refresh"><span class="tab-num">04</span> {t("tab_refresh")} <span class="tab-count">{counts_by_tab["refresh"]}</span></button>
   </div>
 </nav>
 
@@ -1571,15 +1896,11 @@ def main() -> int:
   {queue_html}
   {onsite_html}
   {refresh_html}
+  {cta_banner}
 </main>
+{cta_popup}
 
-<div id="cta-card" class="cta-card">
-  <button class="cta-card-dismiss" onclick="document.getElementById('cta-card').style.display='none'" aria-label="Fermer">x</button>
-  <div class="cta-card-overline">EASYGROWTH</div>
-  <p class="cta-card-body">Envie d&rsquo;aller plus loin avec ce systeme, ou un projet d&rsquo;automatisation ?</p>
-  <a class="cta-card-btn" href="https://zcal.co/i/DRmQAADm" target="_blank" rel="noopener">Prendre rendez-vous</a>
-</div>
-
+{i18n_script}
 <script>{JS}</script>
 </body>
 </html>
