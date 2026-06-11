@@ -10,12 +10,12 @@ En 2026, cette logique est cassée. Voici pourquoi, avec un scénario que tu peu
 
 | Page typique d'un site B2B | Impressions / mois | CTR | Clics réels |
 |---|---:|---:|---:|
-| Page "qu'est-ce que la VoIP" | 50 000 | 0.4 % | ~200 |
-| Page "indicatif Canada" | 40 000 | 0.7 % | ~280 |
-| Page "comment fonctionne le DNS" | 25 000 | 0.3 % | ~75 |
-| Page produit "acheter numéro virtuel" | 800 | 5.5 % | ~44 |
+| Page "qu'est-ce qu'un CRM" | 90 000 | 0.4 % | ~360 |
+| Page "quelle heure est-il a New York" | 60 000 | 0.3 % | ~180 |
+| Page "convertir des miles en km" | 40 000 | 0.5 % | ~200 |
+| Page produit "logiciel CRM pour PME" | 900 | 5.0 % | ~45 |
 
-Sous l'ancien système, les 3 premières pages sont des "succès SEO". Sous la BVS, on les voit comme ce qu'elles sont : **des pièges zero-click**. Google donne la réponse directement dans la SERP (Knowledge Graph, AI Overview, featured snippet), l'utilisateur n'a aucune raison de cliquer. La 4ème page, au contraire, génère ~44 clics par mois mais ces clics vont **directement** vers la page d'achat — un ratio commercial radicalement meilleur.
+Sous l'ancien système, les 3 premières pages sont des "succès SEO". Sous la BVS, on les voit comme ce qu'elles sont : **des pièges zero-click**. Google donne la réponse directement dans la SERP (Knowledge Graph, AI Overview, calculatrice intégrée), l'utilisateur n'a aucune raison de cliquer. La 4ème page, au contraire, génère ~45 clics par mois mais ces clics vont **directement** vers la page d'achat — un ratio commercial radicalement meilleur.
 
 La BVS répond à une seule question : **"Si on rank sur ce mot-clé, est-ce que ça apporte un client ou pas ?"**
 
@@ -45,7 +45,7 @@ Une note de 0 à 10, qui combine 5 ingrédients :
    - Pas de lien → 0
 
 5. **Pénalité direct-answer** (0 à -4) — Google donne-t-il déjà la réponse ?
-   - Knowledge Graph factoid (ex: "indicatif d'un pays" → Google affiche le code direct) → -4
+   - Knowledge Graph factoid (ex: "quelle heure est-il a Tokyo" → Google affiche l'heure directement) → -4
    - Instant answer / calculatrice / conversion → -4
    - Featured snippet qui répond complètement → -2
    - AI Overview qui mange l'espace organique → -2
@@ -62,7 +62,7 @@ C'est la règle qui force `BVS = 0` même si les autres scores donneraient quelq
 
 Si les 3 conditions sont remplies → `zero_click_trap: true`, `BVS = 0`, action : ne jamais queuer pour rédaction. Pour les pages existantes → action `consider_consolidate_or_remove`.
 
-### Contre-exemple : pourquoi "VoIP centre d'appel" n'est PAS un trap (si tu vends de la VoIP)
+### Contre-exemple : pourquoi "logiciel CRM pour PME" n'est PAS un trap (si tu vends un CRM)
 
 Sur la SERP de cette requête, on trouve typiquement un Knowledge Graph (pour une marque concurrente) ET un answer box. On pourrait croire que c'est un piège. Mais :
 - Intent = commercial (pas informational) → la première condition tombe
@@ -90,16 +90,16 @@ Sur chaque onglet du dashboard tu vois :
 ## Ce que la BVS change concrètement pour ton workflow
 
 **Avant** :
-- Le système te queuait "qu'est-ce que la VoIP" en priorité 1 (vol énorme, KD faible, super facile à ranker)
+- Le système te queuait "qu'est-ce qu'un CRM" en priorité 1 (vol énorme, KD faible, super facile à ranker)
 - Tu écrivais l'article, il rankait
-- Tu te disais "j'ai 50k impressions / mois, mission accomplie"
+- Tu te disais "j'ai 90k impressions / mois, mission accomplie"
 - Tu te demandais pourquoi le pipeline commercial ne bouge pas
 
 **Après** :
-- Le système marque "qu'est-ce que la VoIP" en `skip` (BVS 0 ou 1, zero_click_trap)
-- À sa place, il te queue "acheter solution VoIP entreprise" (BVS 9, commercial, lien naturel vers la money page)
-- Tu écris cet article, qui reçoit beaucoup moins d'impressions (peut-être 800/mois) mais un CTR de 4-6%
-- Et qui génère des leads parce qu'il funnelle vers `/produits/voip/`
+- Le système marque "qu'est-ce qu'un CRM" en `skip` (BVS 0 ou 1, zero_click_trap)
+- À sa place, il te queue "logiciel CRM pour PME" (BVS 9, commercial, lien naturel vers la money page)
+- Tu écris cet article, qui reçoit beaucoup moins d'impressions (peut-être 900/mois) mais un CTR de 4-6%
+- Et qui génère des leads parce qu'il funnelle vers `/produits/crm/`
 
 C'est la philosophie : **moins de bruit, plus de signal commercial**.
 

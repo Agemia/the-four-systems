@@ -44,7 +44,7 @@ In the run report, always include:
 ```
 - Fan-out variations fetched: <N_total>
 - Dropped as duplicates of existing bank: <N_dup>
-- Zero-click traps detected (skipped): <N_zct>  ← e.g. "indicatif Canada"-style queries Google answers directly
+- Zero-click traps detected (skipped): <N_zct>  ← e.g. "quelle heure est-il a Tokyo"-style queries Google answers directly
 - New keywords added to bank: <N_new>
 - Queue items skipped (already queued/written): <N_qskip>
 - Queue items added: <N_added>
@@ -110,7 +110,7 @@ Compute BVS for each keyword. Then map to priority:
 | 2 to 4 | 3 | Add to bank, do NOT queue |
 | 0 to 1 | skip | Add to bank with `priority: "skip"` and `skip_reason`, do NOT queue, **and do not re-research** on the next run |
 
-**Zero-click trap rule (the "indicatif Canada" rule)**: when a keyword is flagged as a zero-click trap by the BVS spec, force `bvs = 0`, `priority = "skip"`, and record `skip_reason: "zero_click_trap:<signal>"`. These are added to the bank only so we don't waste a future DataForSEO call on them. They are never queued.
+**Zero-click trap rule**: when a keyword is flagged as a zero-click trap by the BVS spec, force `bvs = 0`, `priority = "skip"`, and record `skip_reason: "zero_click_trap:<signal>"`. These are added to the bank only so we don't waste a future DataForSEO call on them. They are never queued.
 
 KD is no longer a hard gate. A high-KD keyword with BVS 8 is still worth queueing — the writer produces a citable passage that wins AI Overview citations even if blue-link rank stays at 8-15. A low-KD keyword with BVS 1 is still skipped.
 
@@ -157,12 +157,12 @@ For a skipped zero-click trap, the same row would look like:
 
 ```json
 {
-  "keyword": "indicatif canada",
-  "seed": "telephony onboarding",
+  "keyword": "what is a crm",
+  "seed": "crm software",
   "intent": "informational",
-  "volume": 9900,
-  "kd": 18,
-  "cpc": 0.05,
+  "volume": 33100,
+  "kd": 12,
+  "cpc": 0.20,
   "priority": "skip",
   "bvs": 0,
   "bvs_components": {

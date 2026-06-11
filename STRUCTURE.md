@@ -11,7 +11,7 @@ the-four-systems/
 ├── STRUCTURE.md                           ← cette page
 ├── CLAUDE.md                              ⭐ Auto-chargé par Claude Code à chaque session :
 │                                          déclenche l'onboarding si le setup est incomplet
-├── LICENSE                                MIT
+├── LICENSE                                Source-available (usage libre, revente interdite)
 ├── .gitignore                             Cache .mcp.json, state runtime, output, reports
 │
 ├── coordinator.sh                         Orchestrateur des runs scheduled (cron / launchd)

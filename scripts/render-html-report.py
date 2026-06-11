@@ -43,8 +43,8 @@ DATE = dt.date.today().isoformat()
 NOW = dt.datetime.now().strftime("%Y-%m-%d %H:%M")
 # Branding shown in the dashboard header. Override per project by editing
 # these two constants, or set the SEO_BRAND_NAME / SEO_BRAND_WORDMARK env vars.
-BRAND_NAME = os.environ.get("SEO_BRAND_NAME", "Four Systems")
-BRAND_WORDMARK = os.environ.get("SEO_BRAND_WORDMARK", "four-systems")
+BRAND_NAME = os.environ.get("SEO_BRAND_NAME", "easygrowth")
+BRAND_WORDMARK = os.environ.get("SEO_BRAND_WORDMARK", "easygrowth.fr")
 
 
 # ----------------------------- helpers --------------------------------------
@@ -949,6 +949,8 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
   color: var(--fg);
 }
 .brand-sub { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: 0.1em; }
+.brand-mark-link { text-decoration: none; color: var(--fg); transition: color 0.15s; }
+.brand-mark-link:hover { color: var(--lime); }
 .live-stamp {
   display: flex; align-items: center; gap: 8px;
   font-size: 11px; color: var(--dim);
@@ -1375,6 +1377,63 @@ code, .mono { font-family: 'JetBrains Mono', 'Geist Mono', ui-monospace, 'SF Mon
   .queue-card-body { grid-template-columns: 1fr; gap: 16px; }
   .topbar-inner, .tabs-inner, .main { padding-left: 20px; padding-right: 20px; }
 }
+
+/* ----- CTA card ----- */
+.cta-card {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 200;
+  width: 290px;
+  background: var(--bg-2);
+  border: 1px solid rgba(85,115,0,0.35);
+  border-radius: 2px;
+  padding: 18px 20px 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08);
+  font-family: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.cta-card-dismiss {
+  position: absolute;
+  top: 10px; right: 12px;
+  background: none; border: none;
+  color: var(--dim);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: color 0.15s;
+}
+.cta-card-dismiss:hover { color: var(--fg); }
+.cta-card-overline {
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--lime);
+  margin-bottom: 8px;
+}
+.cta-card-body {
+  font-size: 13px;
+  color: var(--fg-2);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+.cta-card-btn {
+  display: inline-block;
+  background: var(--lime);
+  color: var(--ink, #0B0D0E);
+  font-family: 'Geist Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 8px 16px;
+  border-radius: 2px;
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+.cta-card-btn:hover { opacity: 0.85; }
+.main { padding-bottom: 100px; }
 """
 
 JS = r"""
@@ -1485,7 +1544,7 @@ def main() -> int:
     <div class="brand">
       <span class="brand-logo" aria-hidden="true"><i></i></span>
       <span class="brand-copy">
-        <span class="brand-mark">{esc(BRAND_WORDMARK)}</span>
+        <a class="brand-mark brand-mark-link" href="https://easygrowth.fr" target="_blank" rel="noopener">{esc(BRAND_WORDMARK)}</a>
         <span class="brand-sub">SEO report &middot; {esc(site_short)}</span>
       </span>
     </div>
@@ -1513,6 +1572,13 @@ def main() -> int:
   {onsite_html}
   {refresh_html}
 </main>
+
+<div id="cta-card" class="cta-card">
+  <button class="cta-card-dismiss" onclick="document.getElementById('cta-card').style.display='none'" aria-label="Fermer">x</button>
+  <div class="cta-card-overline">EASYGROWTH</div>
+  <p class="cta-card-body">Envie d&rsquo;aller plus loin avec ce systeme, ou un projet d&rsquo;automatisation ?</p>
+  <a class="cta-card-btn" href="https://zcal.co/i/DRmQAADm" target="_blank" rel="noopener">Prendre rendez-vous</a>
+</div>
 
 <script>{JS}</script>
 </body>

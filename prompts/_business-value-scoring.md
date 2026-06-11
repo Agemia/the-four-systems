@@ -21,7 +21,7 @@ For every keyword or URL, gather what you can. Missing inputs are fine — score
 | `serp_features` | DataForSEO serp_organic_live_advanced | List of features on the SERP: `ai_overview`, `featured_snippet`, `people_also_ask`, `knowledge_graph`, `instant_answer`, `shopping`, `local_pack`, `top_stories`, `images`, `video`, `paid_ads` (count). |
 | `organic_above_fold` | derived | true if any organic blue link is above the first SERP feature on desktop 1080p. |
 | `money_page_match` | `context/services.md` | `full` if the topic IS one of the products/services, `partial` if adjacent, `none` otherwise. |
-| `direct_answer_pattern` | derived from query | true if the query matches a factoid pattern (definition, conversion, country/area code lookup, weather, currency, distance, sports score, time zone, phone code, etc.). |
+| `direct_answer_pattern` | derived from query | true if the query matches a factoid pattern (definition, conversion, time zone lookup, weather, currency, distance, sports score, dictionary lookup, mathematical operation, etc.). |
 | `our_brand_in_serp` | site sitemap | true if the site already has a URL ranking in top 10 for this query. Used to gate navigational scoring. |
 
 ## Scoring components (sum to BVS, then clamp 0..10)
@@ -72,7 +72,7 @@ Subtract the worst applicable penalty (do NOT stack them).
 
 | SERP situation | Penalty |
 |---|---|
-| `knowledge_graph` answer present AND `direct_answer_pattern = true` (e.g. "indicatif Canada" → Google shows "+1" directly) | −4 |
+| `knowledge_graph` answer present AND `direct_answer_pattern = true` (e.g. "quelle heure est-il a Tokyo" → Google shows the time directly) | −4 |
 | `instant_answer` / calculator / converter present (e.g. "USD to EUR", "5 km to miles") | −4 |
 | `knowledge_panel` present AND no organic link above the fold | −3 |
 | `featured_snippet` (definition or paragraph) where the snippet contains a complete answer | −2 |
@@ -96,7 +96,7 @@ bvs     = clamp(bvs_raw, 0, 10)
 | 2 to 4 | **3** | Park in bank. Only chase if the topic cluster justifies it (topical authority play) or if the writer can produce real Information Gain on it. |
 | 0 to 1 | **skip** | Zero-click trap or off-business. Record in bank with `priority: "skip"` and a `skip_reason`. Never queue. |
 
-## Zero-click trap detection (the "indicatif Canada" rule)
+## Zero-click trap detection (the zero-click trap rule)
 
 A keyword is a **zero-click trap** when ALL of the following are true:
 
@@ -109,7 +109,7 @@ In that case:
 - Set `skip_reason: "zero_click_trap: <which signal>"`.
 - Never add to content-queue. Add to keyword-bank with `priority: "skip"` so it's not researched again.
 
-**Counter-example**: "acheter numéro de téléphone Canada" for a telephony business → `intent = transactional`, `money_page_match = full`, SERP shows paid_ads + product_pack → BVS ≈ 4 + 3 + 1 + 3 = 11 → clamped to 10. This IS the kind of keyword to chase.
+**Counter-example**: "logiciel CRM pour PME" for a company selling CRM software → `intent = transactional`, `money_page_match = full`, SERP shows paid_ads + product_pack → BVS ≈ 4 + 3 + 1 + 3 = 11 → clamped to 10. This IS the kind of keyword to chase.
 
 ## Anti-pattern: do not exclusively chase high-volume informational keywords
 

@@ -456,7 +456,7 @@ If any of those fail, fix the underlying problem before building System 1. Debug
 
 The four systems live in a public repo so anyone watching the YouTube tutorial can clone it, drop their `.mcp.json` and `context/` files in, and run.
 
-**Repo:** `github.com/example/the-four-systems` (planned, public, MIT)
+**Repo:** `github.com/example/the-four-systems` (planned, public, source-available)
 
 **Layout:**
 

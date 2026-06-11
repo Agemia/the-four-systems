@@ -138,7 +138,7 @@
                     │  et le MCP GSC. Lit .claude/settings.local.json
                     │  pour le allowlist.
                     │
-2. tu tapes     : "research keywords for 'voip centre d appel'"
+2. tu tapes     : "research keywords for 'logiciel crm pour pme'"
                     │
                     │  Claude lit prompts/keyword-researcher.md + 
                     │  context/* + prompts/_business-value-scoring.md +
@@ -153,7 +153,7 @@
 5. Claude       : appelle scripts/render-html-report.py → output/dashboard.html
                     │
 6. Claude te dit: "Done. 32 keywords ajoutés (8 BVS ≥ 8, 14 BVS 5-7, 8 BVS 2-4, 2 zero-click traps).
-                    Top 3 queued : voip centre d'appel français, logiciel call center français, ..."
+                    Top 3 queued : logiciel CRM pour PME, meilleur CRM PME 2026, CRM prix..."
 ```
 
 ### Mode scheduled (cron / launchd)
@@ -210,7 +210,7 @@ Set via `claude /login` ou variable d'env `ANTHROPIC_API_KEY`. Sans ça, le LLM 
 ## Cycle de vie d'un keyword dans le système
 
 ```
-seed.txt          "voip centre d'appel"
+seed.txt          "logiciel crm pour pme"
    │
    ▼
 System 1          fan-out → 32 variations + BVS pour chaque

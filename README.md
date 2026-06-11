@@ -3,6 +3,8 @@
 > **Un système agentique de SEO pour 2026, conçu pour l'ère de l'IA Search.**
 > 4 agents IA qui se coordonnent pour faire ton SEO en autonomie : recherche de mots-clés, rédaction d'articles, audit technique, et détection des contenus à rafraîchir. Tout cela en privilégiant **la valeur business** plutôt que le volume brut d'impressions.
 
+> Construit et distribue par [easygrowth.fr](https://easygrowth.fr). Un projet d'automatisation SEO ou IA pour ton business ? [Prends rendez-vous avec nous](https://zcal.co/i/DRmQAADm).
+
 ---
 
 ## 📖 Sommaire
@@ -27,8 +29,8 @@ Le SEO en 2020 était simple : tu visais un mot-clé à fort volume, tu écrivai
 
 **En 2026, cette logique est cassée.** Voici pourquoi :
 
-- Quand tu cherches "indicatif Canada", Google affiche directement **"+1"** en haut de la page. Tu ne cliques sur aucun site.
-- Quand tu cherches "qu'est-ce que la VoIP", Google répond avec une **AI Overview** générée par Gemini, sans envoyer l'utilisateur ailleurs.
+- Quand tu cherches "quelle heure est-il a Tokyo", Google affiche directement **l'heure** en haut de la page. Tu ne cliques sur aucun site.
+- Quand tu cherches "qu'est-ce qu'un CRM", Google répond avec une **AI Overview** générée par Gemini, sans envoyer l'utilisateur ailleurs.
 - ChatGPT, Perplexity, Claude, et Gemini répondent aux questions de tes utilisateurs **sans même les amener sur ton site**.
 
 Résultat : tu peux avoir 100 000 impressions par mois sur une page... et seulement 300 clics. Tu fais du volume pour rien. Aucun client.
@@ -50,8 +52,8 @@ Tous les agents parlent le même langage : la **BVS**, une note de **0 à 10** q
 
 > "Si on rank sur ce mot-clé, est-ce que ça nous apporte un client ?"
 
-- **BVS 10** = page produit ciblée par une requête commerciale avec annonces payantes en SERP → jackpot
-- **BVS 0** = "indicatif Canada" → zero-click trap, Google répond direct, on n'écrira jamais d'article là-dessus
+- **BVS 10** = page produit ciblée par une requête commerciale avec annonces payantes en SERP : jackpot
+- **BVS 0** = "quelle heure est-il a Tokyo" : zero-click trap, Google répond direct, on n'écrira jamais d'article là-dessus
 
 Les agents calculent automatiquement la BVS de chaque mot-clé et de chaque page. Le système refuse de produire du contenu BVS ≤ 1. Tu gagnes des semaines de rédaction inutile.
 
@@ -281,6 +283,13 @@ Le top-up DataForSEO de 50 € dure typiquement 3-6 mois selon ton volume d'util
 
 ---
 
+> **Besoin d'aide pour l'implementer ?**
+>
+> easygrowth installe et adapte ce systeme pour des entreprises : multi-sites, CMS custom, workflows internes. On s'occupe du setup, de la personnalisation du contexte business, et de la formation de ton equipe.
+> [Prendre rendez-vous avec easygrowth](https://zcal.co/i/DRmQAADm)
+
+---
+
 ## 8. Pour aller plus loin
 
 | Sujet | Doc |
@@ -352,11 +361,17 @@ Donc compter ~3h du clone à ton premier article ranked. La 2ème semaine, c'est
 
 ## License
 
-MIT. Utilise ce projet comme tu veux : commercial, perso, fork, vendu en formation, etc.
+Source-available : tu peux utiliser et adapter ce systeme pour ton business ou tes clients. Revente, redistribution et republication interdites sans accord ecrit. Voir [LICENSE](LICENSE).
 
 ## Contribuer
 
 Pull requests bienvenues. Pour signaler un bug ou proposer une fonctionnalité, ouvre une issue.
+
+## Aller plus loin avec easygrowth
+
+[easygrowth.fr](https://easygrowth.fr) est une agence d'automatisation IA et SEO. On construit des systemes sur mesure pour des entreprises qui veulent faire du SEO serieusement sans y passer leurs semaines.
+
+Tu veux ce systeme installe, configure, et adapte a ton business ? [Prends rendez-vous](https://zcal.co/i/DRmQAADm).
 
 ---
 
